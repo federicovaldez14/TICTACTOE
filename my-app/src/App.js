@@ -8,6 +8,59 @@ function Square({ value, onSquareClick }) {
   );
 }
 
+function appNames() {
+  return ['Tic Tac Toe', 'Connect Four', 'Chess'];
+  const [Player1, setPlayer1] = useState("");
+  const [Player2, setPlayer2] = useState("");
+  const [Aceptar, Cancelar] = useState(false);
+}
+
+const handleAceptar = (aa) => {
+    aa.preventDefault();
+    // Evita el comportamiento que puede llegar a tener predeterminadamente el comportamiento de formularios del html con la funcion de que react no cargue si no que lo controle al darle aceptar al formulario.
+    Aceptar(true);
+  };
+
+const handleCancelar = (bb) => {
+  setPlayer1("");
+  setPlayer2("");
+  Cancelar(true);
+}
+
+  {(!Aceptar) ? 
+    <form onSubmit={handleAceptar}>
+      <h2>Ingrese los nombres de los Participantes: </h2>
+      <input
+        type="Name"
+        placeholder="Jugador 1"
+        value={Player1}
+        onChange={(aa) => setPlayer1(aa.target.value)}
+      />
+      <input
+        type="Name"
+        placeholder="Jugador 2"
+        value={Player2}
+        onChange={(aa) => setPlayer2(aa.target.value)}
+      />
+      <button type="submit">Aceptar</button>
+      <button type="button" onClick={handleCancelar}>Cancelar</button>
+    </form>
+  }
+  {(!Cancelar)?<JugadoresParticipantes Player1={Player1} Player2={Player2} /> : null}
+
+function JugadoresParticipantes({ Player1, Player2 }) {
+  return (
+    <>
+      <h3>Jugadores a Participar</h3>
+      <ul>
+        <li>{Player1}</li>
+        <h2>VS</h2>
+        <li>{Player2}</li>
+      </ul>
+    </>
+  );
+}
+
 function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
     if (calculateWinner(squares) || squares[i]) {
@@ -63,11 +116,25 @@ function Board({ xIsNext, squares, onPlay }) {
   );
 }
 
+function handlePlay(nextSquares) {
+  const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+  setHistory(nextHistory);
+  setCurrentMove(nextHistory.length - 1);
+  setTurno(turno + 1);
+}
+
+function reiniciarJuego() {
+  setHistory([Array(16).fill(null)]); 
+  setCurrentMove(0);                  
+  setTurno(1);                        
+}
+
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
+  const [turno, setTurno] = useState(1);
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -99,6 +166,8 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
+        <p>Turno actual: {turno}</p>
+        <button onClick={reiniciarJuego}>Reiniciar juego</button>
         <ol>{moves}</ol>
       </div>
     </div>
